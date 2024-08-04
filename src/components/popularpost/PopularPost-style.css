@@ -1,0 +1,10 @@
+.rightcolumn {
+    grid-column: 4;
+  }
+
+
+.card {
+    background-color: white;
+    padding: 20px;
+    margin: 20px 0;
+  }
