@@ -13,7 +13,7 @@ const NewsList = () => {
     const postsPerPage = 3;
 
     useEffect(() => {
-        axios.get('http://localhost:8081/api/news')
+        axios.get('http://localhost:8081/public/api/news')
             .then(response => {
                 console.log('Fetched news data:', response.data);
                 setNews(response.data);

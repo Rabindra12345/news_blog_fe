@@ -11,11 +11,12 @@ import NewsDetails from './components/newsdetails/NewsDetails';
 // import Signup from './components/auth/Signup';
 import './App.css';
 
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoggedIn: false,
+      isLoggedIn: !!localStorage.getItem('token'), // Check localStorage
     };
   }
 
@@ -24,6 +25,8 @@ class App extends Component {
   };
 
   handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.setState({ isLoggedIn: false });
   };
 
@@ -46,10 +49,7 @@ class App extends Component {
                     <button onClick={this.handleLogout}>Logout</button>
                   </>
                 ) : (
-                  <>
-                    <Link to="/login">Login</Link>
-                    {/* <Link to="/signup">Signup</Link> */}
-                  </>
+                  <Link to="/login">Login</Link>
                 )}
               </span>
             </div>
@@ -60,7 +60,6 @@ class App extends Component {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login onLogin={this.handleLogin} />} />
               <Route path="/news/:newsId" element={<NewsDetails />} />
-              {/* <Route path="/signup" element={<Signup />} /> */}
             </Routes>
           </main>
           <Footer />
@@ -71,3 +70,64 @@ class App extends Component {
 }
 
 export default App;
+
+// class App extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       isLoggedIn: false,
+//     };
+//   }
+
+//   handleLogin = () => {
+//     this.setState({ isLoggedIn: true });
+//   };
+
+//   handleLogout = () => {
+//     this.setState({ isLoggedIn: false });
+//   };
+
+//   render() {
+//     const { isLoggedIn } = this.state;
+
+//     return (
+//       <Router>
+//         <div>
+//           <Header />
+//           <nav>
+//             <div className="header">
+//               <span className="left">
+//                 <Link to="/">Home</Link>
+//               </span>
+//               <span className="right">
+//                 {isLoggedIn ? (
+//                   <>
+//                     <Link to="/dashboard">Dashboard</Link>
+//                     <button onClick={this.handleLogout}>Logout</button>
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Link to="/login">Login</Link>
+//                     {/* <Link to="/signup">Signup</Link> */}
+//                   </>
+//                 )}
+//               </span>
+//             </div>
+//           </nav>
+//           <main>
+//             <Routes>
+//               <Route path="/" element={<NewsList />} />
+//               <Route path="/dashboard" element={<Dashboard />} />
+//               <Route path="/login" element={<Login onLogin={this.handleLogin} />} />
+//               <Route path="/news/:newsId" element={<NewsDetails />} />
+//               {/* <Route path="/signup" element={<Signup />} /> */}
+//             </Routes>
+//           </main>
+//           <Footer />
+//         </div>
+//       </Router>
+//     );
+//   }
+// }
+
+// export default App;

@@ -2,24 +2,51 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Login-style.css';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
-    axios.post('http://localhost:8081/api/login', { email, password })
-      .then(response => {
-        console.log('Login successful:', response.data);
-        onLogin(); 
-      })
-      .catch(error => {
-        console.error('Error logging in:', error);
-        setError('Invalid email or password');
-      });
+    try {
+      const response = await axios.post(
+        'http://localhost:8081/api/auth/signin',
+        { username, password }
+      );
+
+      console.log('Login successful:', response.data);
+
+      const body = response.data?.body;
+      const accessToken = body?.accessToken;  // ✅ correct path
+      const refreshToken = body?.token;       // ✅ your UUID refresh token
+
+      if (!accessToken) {
+        console.error('accessToken missing in response:', response.data);
+        setError('Login failed: access token not returned');
+        return;
+      }
+
+      // Save tokens and user info
+      localStorage.setItem('token', accessToken);
+      localStorage.setItem('refreshToken', refreshToken ?? '');
+      localStorage.setItem('user', JSON.stringify(body));
+
+      console.log('Access token saved:', localStorage.getItem('token'));
+
+      onLogin();
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Error logging in:', err);
+      setError('Invalid username or password');
+    }
   };
 
   return (
@@ -27,14 +54,15 @@ const Login = ({ onLogin }) => {
       <h2>Login</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
-          <label>Email:</label>
+          <label>Username</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
+
         <div className="form-group">
           <label>Password:</label>
           <input
@@ -44,7 +72,9 @@ const Login = ({ onLogin }) => {
             required
           />
         </div>
+
         {error && <p className="error-message">{error}</p>}
+
         <button type="submit">Login</button>
       </form>
     </div>
