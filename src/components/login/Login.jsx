@@ -1,4 +1,3 @@
-// src/components/auth/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Login-style.css';
@@ -25,8 +24,8 @@ const Login = ({ onLogin }) => {
       console.log('Login successful:', response.data);
 
       const body = response.data?.body;
-      const accessToken = body?.accessToken;  // ✅ correct path
-      const refreshToken = body?.token;       // ✅ your UUID refresh token
+      const accessToken = body?.accessToken;  
+      const refreshToken = body?.token;       
 
       if (!accessToken) {
         console.error('accessToken missing in response:', response.data);

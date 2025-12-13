@@ -1,14 +1,16 @@
-import logo from './logo.svg';
 import React, { Component } from 'react';
-import './App.css'; // Assuming you have some basic styles
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+// import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
 import NewsList from './components/NewsList/NewsList';
+
 import Dashboard from './components/dashboard/Dashboard';
 import Footer from './components/footer/Footer'; 
 import Header from './components/navbar/Header'; 
 import Login from './components/login/Login';
 import NewsDetails from './components/newsdetails/NewsDetails';
-// import Signup from './components/auth/Signup';
+import TokenRefreshDialog from './components/TokenRefreshDialog/TokenRefreshDialog';
+import TokenManager from './utils/TokenManager';
 import './App.css';
 
 
@@ -16,28 +18,111 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoggedIn: !!localStorage.getItem('token'), // Check localStorage
+      isLoggedIn: !!localStorage.getItem('token'), 
+      showRefreshDialog: false,
+      timeRemaining: 60, 
     };
   }
 
+  componentDidMount() {
+    if (this.state.isLoggedIn) {
+      this.startTokenMonitoring();
+    }
+  }
+
+  componentWillUnmount() {
+    TokenManager.stopTokenCheck();
+  }
+
+  startTokenMonitoring = () => {
+    TokenManager.startTokenCheck(
+      this.handleTokenExpired,
+      this.handleTokenExpiringSoon,
+      30000 // Check every 30 seconds
+    );
+  };
+
+  handleTokenExpired = () => {
+    // Token has already expired - force logout
+    alert('Your session has expired. Please login again.');
+    this.handleLogout();
+  };
+
+  handleTokenExpiringSoon = () => {
+    // Token will expire soon - show dialog
+    const token = localStorage.getItem('token');
+    const timeRemaining = Math.floor(TokenManager.getTimeUntilExpiry(token));
+    
+    this.setState({ 
+      showRefreshDialog: true,
+      timeRemaining: timeRemaining > 0 ? timeRemaining : 0
+    });
+  };
+
+  handleRefreshToken = async () => {
+  try {
+    const token = localStorage.getItem("refreshToken"); // current access token (or refresh token if you store it)
+
+    const response = await fetch("http://localhost:8081/api/auth/refresh", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token: token ?? "" }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Refresh failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // expect backend returns: { accessToken: "..." }
+    if (!data?.accessToken) {
+      throw new Error("No accessToken in refresh response");
+    }
+
+    localStorage.setItem("token", data.accessToken);
+
+    // close dialog
+    this.setState({ showRefreshDialog: false });
+
+    // restart monitoring with the new token (optional but nice)
+    this.startTokenMonitoring();
+  } catch (error) {
+    console.error("Token refresh failed:", error);
+    alert("Failed to refresh session. Please login again.");
+    this.handleLogout();
+  }
+};
+
+
   handleLogin = () => {
     this.setState({ isLoggedIn: true });
+    this.startTokenMonitoring();
   };
 
   handleLogout = () => {
+    TokenManager.stopTokenCheck();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    this.setState({ isLoggedIn: false });
+    this.setState({ 
+      isLoggedIn: false,
+      showRefreshDialog: false 
+    });
+    window.location.href = '/login';
   };
 
   render() {
-    const { isLoggedIn } = this.state;
+    const { isLoggedIn, showRefreshDialog, timeRemaining } = this.state;
 
     return (
       <Router>
         <div>
-          <Header />
-          <nav>
+          {/* <Header /> */}
+          <Header isLoggedIn={isLoggedIn} onLogout={this.handleLogout} />
+
+          {/* <nav>
             <div className="header">
               <span className="left">
                 <Link to="/">Home</Link>
@@ -53,7 +138,15 @@ class App extends Component {
                 )}
               </span>
             </div>
-          </nav>
+          </nav> */}
+
+          <TokenRefreshDialog
+            isOpen={showRefreshDialog}
+            onRefresh={this.handleRefreshToken}
+            onLogout={this.handleLogout}
+            timeRemaining={timeRemaining}
+          />
+
           <main>
             <Routes>
               <Route path="/" element={<NewsList />} />
@@ -71,11 +164,27 @@ class App extends Component {
 
 export default App;
 
+
+
+// import logo from './logo.svg';
+// import React, { Component } from 'react';
+// import './App.css'; // Assuming you have some basic styles
+// import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+// import NewsList from './components/NewsList/NewsList';
+// import Dashboard from './components/dashboard/Dashboard';
+// import Footer from './components/footer/Footer'; 
+// import Header from './components/navbar/Header'; 
+// import Login from './components/login/Login';
+// import NewsDetails from './components/newsdetails/NewsDetails';
+// // import Signup from './components/auth/Signup';
+// import './App.css';
+
+
 // class App extends Component {
 //   constructor(props) {
 //     super(props);
 //     this.state = {
-//       isLoggedIn: false,
+//       isLoggedIn: !!localStorage.getItem('token'), 
 //     };
 //   }
 
@@ -84,6 +193,8 @@ export default App;
 //   };
 
 //   handleLogout = () => {
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('user');
 //     this.setState({ isLoggedIn: false });
 //   };
 
@@ -106,10 +217,7 @@ export default App;
 //                     <button onClick={this.handleLogout}>Logout</button>
 //                   </>
 //                 ) : (
-//                   <>
-//                     <Link to="/login">Login</Link>
-//                     {/* <Link to="/signup">Signup</Link> */}
-//                   </>
+//                   <Link to="/login">Login</Link>
 //                 )}
 //               </span>
 //             </div>
@@ -120,7 +228,6 @@ export default App;
 //               <Route path="/dashboard" element={<Dashboard />} />
 //               <Route path="/login" element={<Login onLogin={this.handleLogin} />} />
 //               <Route path="/news/:newsId" element={<NewsDetails />} />
-//               {/* <Route path="/signup" element={<Signup />} /> */}
 //             </Routes>
 //           </main>
 //           <Footer />
