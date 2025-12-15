@@ -1,0 +1,38 @@
+.radioPlayer {
+  display: flex;
+  /* align-items: center; */
+  /* gap: 10px; */
+}
+
+.radioSelect {
+  height: 34px;
+  max-width: 260px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  background: #fff;
+}
+
+.radioBtn {
+  height: 34px;
+  padding: 0 16px;
+  width: 100px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+}
+
+.radioStatus {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.radioPlayer.compact .radioStatus {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .radioSelect {
+    display: none; 
+  }
+}

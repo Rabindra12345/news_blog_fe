@@ -18,6 +18,7 @@ const Header = ({ isLoggedIn, onLogout }) => {
     { label: "Sports", to: "/sports" },
     { label: "Entertainment", to: "/entertainment" },
     { label: "Contact", to: "/contact" },
+    { label: "Radio", to: "/radio" }
   ];
 
   return (
@@ -75,6 +76,7 @@ const Header = ({ isLoggedIn, onLogout }) => {
           })}
         </div>
       </nav>
+      
     </header>
   );
 };

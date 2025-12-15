@@ -219,6 +219,36 @@
   box-shadow: inset 0 0 0 1px rgba(11,116,255,0.22);
 }
 
+.mainNav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* keeps nav links centered */
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.navLinks {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.navLink {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
+.navPlayer {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+
 /* Responsive */
 @media (max-width: 900px){
   .main-bar{

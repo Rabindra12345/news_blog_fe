@@ -1,115 +1,75 @@
-.entertainment-section {
-    margin-top: 30px;
-    margin-bottom: 20px;
-  }
-  
-  .entertainment-cards {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-  
-  .entertainment-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 30%;
-    margin-bottom: 20px;
-    padding: 0px;
-    text-align: center;
-  }
-  
-  .entertainment-img {
-    background-color: #ccc;
-    width: 100%;
-    height: 150px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-  }
-  
-  .entertainment-content h3 {
-    font-size: 1.2rem;
-    margin: 10px 0;
-  }
-  
-  .entertainment-content p {
-    font-size: 0.9rem;
-    color: #555;
-  }
-
-  .entertainment-cards{
+/* Container holding all cards */
+.entertainment-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
+
+  /* key line: cards won't go narrower than 260px */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+  align-items: stretch;
 }
 
-.entertainment-card{
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.10);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+/* Make the whole card wider + nicer */
+.entertainment-card {
   display: flex;
   flex-direction: column;
-}
+  text-decoration: none;
 
-.entertainment-img{
-  height: 160px;         /* ✅ fixed height */
-  width: 100%;
+  border-radius: 16px;
   overflow: hidden;
-  background: rgba(0,0,0,0.04);
+
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+  /* optional: ensure a sensible minimum height */
+  min-height: 320px;
 }
 
-.entertainment-img img{
+/* Image area: make it taller so card doesn't feel skinny */
+.entertainment-img {
+  width: 100%;
+  height: 190px;
+  background: #f2f2f2;
+}
+
+.entertainment-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;     /* ✅ crops huge images */
+  object-fit: cover;
   display: block;
 }
 
-.img-placeholder{
-  height: 100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color: #6b7280;
-  font-weight: 800;
+.entertainment-content {
+  padding: 14px 14px 16px;
 }
 
-.entertainment-content{
-  padding: 12px;
-}
-
-.entertainment-content h3{
+.entertainment-content h3 {
   margin: 0 0 8px;
   font-size: 16px;
-  line-height: 1.2;
+  line-height: 1.3;
 
-  /* ✅ prevents title from making card tall */
+  /* nice truncation instead of wrapping forever */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.entertainment-content p{
+.entertainment-content p {
   margin: 0;
-  color: #4b5563;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #444;
 
-  /* ✅ clamp body */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* responsive */
-@media (max-width: 1100px){
-  .entertainment-cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+/* Optional: reduce the "huge spacing" look on very wide screens */
+.entertainment-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 14px;
 }
-@media (max-width: 700px){
-  .entertainment-cards{ grid-template-columns: 1fr; }
-}
-
-  

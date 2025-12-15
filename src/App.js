@@ -12,6 +12,8 @@ import NewsDetails from './components/newsdetails/NewsDetails';
 import TokenRefreshDialog from './components/TokenRefreshDialog/TokenRefreshDialog';
 import TokenManager from './utils/TokenManager';
 import './App.css';
+import LiveRadioPlayer from "./components/radio/LiveRadioPlayer";
+
 
 
 class App extends Component {
@@ -121,6 +123,7 @@ class App extends Component {
         <div>
           {/* <Header /> */}
           <Header isLoggedIn={isLoggedIn} onLogout={this.handleLogout} />
+        <LiveRadioPlayer />
 
           {/* <nav>
             <div className="header">
@@ -153,6 +156,7 @@ class App extends Component {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login onLogin={this.handleLogin} />} />
               <Route path="/news/:newsId" element={<NewsDetails />} />
+
             </Routes>
           </main>
           <Footer />

@@ -58,3 +58,55 @@ button[type="submit"]:hover {
   color: #b91c1c;
 }
 
+.multi-select {
+  width: 100%;
+  min-height: 120px; /* makes it readable */
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.multi-select option {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.selected-preview {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+/* react-select (Categories dropdown) */
+.category-select {
+  width: 100%;
+}
+
+.rs__control {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: none;
+}
+
+.rs__control:hover {
+  border-color: #999;
+}
+
+.rs__value-container {
+  padding: 2px 10px;
+}
+
+.rs__multi-value {
+  border-radius: 999px;
+}
+
+.rs__placeholder {
+  opacity: 0.75;
+}
+
+.rs__menu {
+  z-index: 9999; /* prevents dropdown being hidden */
+}
+
+

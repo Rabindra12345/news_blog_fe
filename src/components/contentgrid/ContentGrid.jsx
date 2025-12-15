@@ -32,7 +32,7 @@ const ContentGrid = () => {
     setErrorMsg("");
 
     axios
-      .get("http://localhost:8081/api/entertainment") // change to /public/api/entertainment if needed
+      .get("http://localhost:8081/public/api/entertainment/news") // change to /public/api/entertainment if needed
       .then((res) => {
         const list = normalizeList(res.data);
         setEntertainmentNews(list);

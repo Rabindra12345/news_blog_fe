@@ -1,8 +1,10 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./DashboardForm.css";
 import Ck from "../editor/Ck";
 import Swal from "sweetalert2";
+import Select from "react-select";
+
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8081";
 
 const DashboardForm = ({ onFormSubmit }) => {
   const [title, setTitle] = useState("");
@@ -10,18 +12,17 @@ const DashboardForm = ({ onFormSubmit }) => {
   const [textImages, setTextImages] = useState([]);
 
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryIds, setCategoryIds] = useState([]); // multi
   const [loadingCats, setLoadingCats] = useState(true);
 
-  const userId = "123"; // TODO replace with real user id later
+  const fileInputRef = useRef(null);
+
+  const userId = "123"; // keep only if backend requires it
 
   useEffect(() => {
     setLoadingCats(true);
 
-    fetch("http://localhost:8081/public/api/news/categories")
-        // fetch("http://localhost:8081/api/categories", {
-        //   headers: { Authorization: `Bearer ${token}` }
-        // })
+    fetch(`${API_BASE}/public/api/news/categories`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load categories");
         return r.json();
@@ -29,18 +30,12 @@ const DashboardForm = ({ onFormSubmit }) => {
       .then((data) => {
         const list = Array.isArray(data) ? data : data?.content || [];
         setCategories(list);
-
-        // auto select first category (optional)
-        if (list.length && !categoryId) {
-          setCategoryId(String(list[0].id));
-        }
       })
       .catch((err) => {
         console.error("Category fetch error:", err);
         setCategories([]);
       })
       .finally(() => setLoadingCats(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTextImagesChange = (e) => {
@@ -51,8 +46,8 @@ const DashboardForm = ({ onFormSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!categoryId) {
-      Swal.fire("Please select a category.", "", "warning");
+    if (!categoryIds.length) {
+      Swal.fire("Please select at least one category.", "", "warning");
       return;
     }
 
@@ -61,16 +56,19 @@ const DashboardForm = ({ onFormSubmit }) => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("textBody", textBody);
+
+    // remove this if you remove userId from backend
     formData.append("userId", userId);
 
-    formData.append("categoryId", categoryId);
+    // send multiple category ids: categoryIds=1&categoryIds=2...
+    categoryIds.forEach((id) => formData.append("categoryIds", id));
 
     textImages.forEach((image) => {
       formData.append("textImages", image);
     });
 
     try {
-      const response = await fetch("http://localhost:8081/api/news", {
+      const response = await fetch(`${API_BASE}/api/news`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,10 +80,12 @@ const DashboardForm = ({ onFormSubmit }) => {
         onFormSubmit?.();
         Swal.fire("News added successfully.", "", "success");
 
-        // reset form
         setTitle("");
         setTextBody("");
         setTextImages([]);
+        setCategoryIds([]);
+
+        if (fileInputRef.current) fileInputRef.current.value = "";
       } else {
         const msg = await response.text();
         console.error("Form submission failed:", msg);
@@ -96,6 +96,17 @@ const DashboardForm = ({ onFormSubmit }) => {
       Swal.fire("Error submitting news.", error.message || "", "error");
     }
   };
+
+  // react-select options
+  const categoryOptions = categories.map((c) => ({
+    value: String(c.id),
+    label: c.name,
+  }));
+
+  // react-select selected values
+  const selectedCategoryOptions = categoryOptions.filter((o) =>
+    categoryIds.includes(o.value)
+  );
 
   return (
     <div className="form-container">
@@ -114,29 +125,28 @@ const DashboardForm = ({ onFormSubmit }) => {
           />
         </div>
 
-        {/* Category */}
+        {/* Categories (multi-select dropdown) */}
         <div className="form-group">
-          <label htmlFor="category">Category:</label>
+          <label>Categories:</label>
 
           {loadingCats ? (
             <div className="hint">Loading categories...</div>
-          ) : categories.length ? (
-            <select
-              id="category"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              required
-            >
-              {categories.map((c) => (
-                <option key={c.id} value={String(c.id)}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          ) : categoryOptions.length ? (
+            <Select
+              className="category-select"
+              classNamePrefix="rs"
+              isMulti
+              placeholder="Select categories..."
+              options={categoryOptions}
+              value={selectedCategoryOptions}
+              onChange={(selected) => {
+                const ids = (selected || []).map((x) => x.value);
+                setCategoryIds(ids);
+              }}
+              closeMenuOnSelect={false}
+            />
           ) : (
-            <div className="hint error">
-              No categories found. Check the categories API.
-            </div>
+            <div className="hint error">No categories found.</div>
           )}
         </div>
 
@@ -154,6 +164,7 @@ const DashboardForm = ({ onFormSubmit }) => {
         <div className="form-group">
           <label htmlFor="textImages">Text Images:</label>
           <input
+            ref={fileInputRef}
             type="file"
             id="textImages"
             multiple
@@ -171,6 +182,8 @@ const DashboardForm = ({ onFormSubmit }) => {
 };
 
 export default DashboardForm;
+
+
 
 
 

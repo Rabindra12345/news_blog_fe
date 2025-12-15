@@ -13,7 +13,7 @@ const PopularPost = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:8081/public/api/news/popular?limit=5")
+      .get("http://localhost:8081/public/api/popular/news?limit=5")
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : res.data?.content || [];
         setPosts(data);
@@ -29,7 +29,7 @@ const PopularPost = () => {
     <section className="popular">
       <div className="popular-card">
         <div className="popular-header">
-          <h3>Popular</h3>
+          <h3>Most Visited</h3>
           <span className="popular-badge">Top</span>
         </div>
 
