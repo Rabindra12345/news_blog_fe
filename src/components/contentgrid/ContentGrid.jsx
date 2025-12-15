@@ -1,7 +1,8 @@
 import "./content-grid-style.css";
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from '../../api/config';
+import axios from "axios";
 
 const stripHtml = (html = "") =>
   html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -32,7 +33,7 @@ const ContentGrid = () => {
     setErrorMsg("");
 
     axios
-      .get("http://localhost:8081/public/api/entertainment/news") // change to /public/api/entertainment if needed
+      .get(`${API_BASE_URL}/public/api/entertainment/news`) 
       .then((res) => {
         const list = normalizeList(res.data);
         setEntertainmentNews(list);

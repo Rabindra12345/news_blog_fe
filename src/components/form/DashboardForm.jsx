@@ -3,8 +3,8 @@ import "./DashboardForm.css";
 import Ck from "../editor/Ck";
 import Swal from "sweetalert2";
 import Select from "react-select";
+import { API_BASE_URL } from '../../api/config';
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8081";
 
 const DashboardForm = ({ onFormSubmit }) => {
   const [title, setTitle] = useState("");
@@ -22,7 +22,7 @@ const DashboardForm = ({ onFormSubmit }) => {
   useEffect(() => {
     setLoadingCats(true);
 
-    fetch(`${API_BASE}/public/api/news/categories`)
+    fetch(`${API_BASE_URL}/public/api/news/categories`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load categories");
         return r.json();
@@ -68,7 +68,7 @@ const DashboardForm = ({ onFormSubmit }) => {
     });
 
     try {
-      const response = await fetch(`${API_BASE}/api/news`, {
+      const response = await fetch(`${API_BASE_URL}/api/news`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

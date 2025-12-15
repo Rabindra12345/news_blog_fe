@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import "./PopularPost-style.css";
+import axios from "axios";
+import { API_BASE_URL } from '../../api/config';
 
 const stripHtml = (html = "") =>
   html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -13,7 +14,7 @@ const PopularPost = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:8081/public/api/popular/news?limit=5")
+      .get(`${API_BASE_URL}/public/api/popular/news?limit=5`)
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : res.data?.content || [];
         setPosts(data);

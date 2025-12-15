@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import "./NewsDetails.css";
+import { API_BASE_URL } from '../../api/config';
+import axios from "axios";
 
-const API_BASE = "http://localhost:8081";
 const MEDIA_PREFIX = "/media/newsBlog/";
 
 const formatDate = (dateStr) => {
@@ -22,19 +22,18 @@ const NewsDetails = () => {
   useEffect(() => {
     if (!newsId) return;
 
-    const controller = new AbortController(); // ✅ cancels the duplicate call in StrictMode
+    const controller = new AbortController(); // cancels the duplicate call in StrictMode
     setLoading(true);
     setError("");
-
     axios
-      .get(`http://localhost:8081/public/api/news/${newsId}`, {
+      .get(`${API_BASE_URL}/public/api/news/${newsId}`, {
         signal: controller.signal,
       })
       .then((res) => {
         setNews(res.data);
       })
       .catch((err) => {
-        // ✅ ignore cancellation error
+        //  ignore cancellation error
         if (err.name === "CanceledError" || err.code === "ERR_CANCELED") return;
 
         console.error("Error fetching news details:", err);
@@ -45,7 +44,7 @@ const NewsDetails = () => {
         if (!controller.signal.aborted) setLoading(false);
       });
 
-    return () => controller.abort(); // ✅ cleanup cancels in-flight request
+    return () => controller.abort(); // cleanup cancels in-flight request
   }, [newsId]);
 
   const images = useMemo(() => {
@@ -61,10 +60,10 @@ const NewsDetails = () => {
         .map((path) => {
           if (path.startsWith("data:image/")) return path;
           if (path.startsWith("http://") || path.startsWith("https://")) return path;
-          if (path.startsWith("/")) return `${API_BASE}${path}`; // already web path
+          if (path.startsWith("/")) return `${API_BASE_URL}${path}`; // already web path
 
           const fileName = String(path).split("/").pop();
-          return `${API_BASE}${MEDIA_PREFIX}${fileName}`;
+          return `${API_BASE_URL}${MEDIA_PREFIX}${fileName}`;
         });
     }
 
