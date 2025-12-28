@@ -25,7 +25,8 @@ const Login = ({ onLogin }) => {
 
       const body = response.data?.body;
       const accessToken = body?.accessToken;  
-      const refreshToken = body?.token;       
+      const refreshToken = body?.token; 
+      const userId=body?.userId;      
 
       if (!accessToken) {
         console.error('accessToken missing in response:', response.data);

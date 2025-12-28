@@ -32,6 +32,7 @@ const ContentGrid = () => {
     setLoading(true);
     setErrorMsg("");
 
+    console.log("BASE URL __________:)"+API_BASE_URL);
     axios
       .get(`${API_BASE_URL}/public/api/entertainment/news`) 
       .then((res) => {

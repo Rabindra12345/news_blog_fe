@@ -5,7 +5,7 @@ const AnalyticsReporting = () => {
     const [analyticsData, setAnalyticsData] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8081/api/analytics')
+        fetch('http://localhost:8080/api/analytics')
             .then(response => response.json())
             .then(data => setAnalyticsData(data))
             .catch(error => console.error('Error fetching analytics data:', error));

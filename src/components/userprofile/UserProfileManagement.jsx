@@ -4,7 +4,7 @@ const UserProfileManagement = () => {
     const [userProfiles, setUserProfiles] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8081/api/users')
+        fetch('http://localhost:8080/api/users')
             .then(response => response.json())
             .then(data => setUserProfiles(data))
             .catch(error => console.error('Error fetching user profiles:', error));
